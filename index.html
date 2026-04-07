@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusGuard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(180deg, #0A0820 0%, #060C1E 35%, #030810 100%);
+            color: #E2E8F0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .card {
+            background: rgba(30, 30, 60, 0.6);
+            border: 1px solid rgba(130, 130, 255, 0.15);
+            border-radius: 20px;
+            padding: 40px 32px;
+            max-width: 380px;
+            width: 90%;
+            text-align: center;
+        }
+        .icon {
+            width: 72px; height: 72px;
+            background: rgba(139, 126, 255, 0.12);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 36px;
+        }
+        h1 { font-size: 22px; margin-bottom: 8px; }
+        .sub { color: #94A3B8; font-size: 14px; margin-bottom: 28px; line-height: 1.5; }
+        .btn {
+            display: block;
+            background: linear-gradient(135deg, #8B7EFF, #52AAFF);
+            color: white;
+            text-decoration: none;
+            padding: 14px 32px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            margin-bottom: 16px;
+            border: none;
+            cursor: pointer;
+        }
+        .hint { color: #64748B; font-size: 12px; line-height: 1.5; }
+        .error { color: #FF6B6B; font-size: 14px; margin-bottom: 16px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="icon">🛡️</div>
+        <h1>FocusGuard</h1>
+        <p class="sub" id="msg">Ktos chce dodac Cie jako partnera odpowiedzialnosci.</p>
+        <p class="error" id="error" style="display:none"></p>
+        <a class="btn" id="openBtn" href="#">Otworz w aplikacji</a>
+        <p class="hint">
+            Nie masz apki? Pobierz ja od osoby, ktora wyslala Ci ten link, a potem kliknij ponownie.
+        </p>
+    </div>
+
+    <script>
+        // URL: https://ericsonart.github.io/focusguard-link/?t=TOKEN
+        var params = new URLSearchParams(window.location.search);
+        var token = params.get('t');
+        var btn = document.getElementById('openBtn');
+        var error = document.getElementById('error');
+
+        if (token) {
+            var deepLink = 'focusguard://pair/' + token;
+            btn.href = deepLink;
+
+            // Auto-open after short delay
+            setTimeout(function() {
+                window.location.href = deepLink;
+            }, 500);
+        } else {
+            error.textContent = 'Nieprawidlowy link - brak tokena.';
+            error.style.display = 'block';
+            btn.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
