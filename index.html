@@ -59,6 +59,7 @@
             background: rgba(139, 126, 255, 0.2); color: #C4BCFF;
             display: flex; align-items: center; justify-content: center; font-size: 12px;
         }
+        .link { display: block; margin-top: 14px; color: #8B7EFF; font-size: 13.5px; }
         .note { color: #64748B; font-size: 12px; line-height: 1.5; margin-top: 16px; }
         .error { color: #F87171; font-size: 14px; margin-bottom: 16px; }
         .hidden { display: none; }
@@ -77,11 +78,13 @@
                 <li><b>2</b><span>Zainstaluj. Android może zapytać o zgodę dla Chrome — wybierz „Ustawienia”, włącz „Zezwól” i wróć.</span></li>
                 <li><b>3</b><span>Otwórz FocusGuard, wpisz imię i dotknij „Dołącz”. Gotowe — jesteście połączeni.</span></li>
             </ul>
+            <a class="link" id="webLink" href="p/">Chcesz tylko zatwierdzać prośby? Zrób to w przeglądarce, bez instalacji.</a>
         </div>
 
         <div id="other" class="hidden">
-            <p class="sub">FocusGuard działa na telefonach z Androidem. Otwórz ten link na swoim telefonie z Androidem.</p>
-            <p class="note">Masz iPhone’a? Wersja na iOS jest w przygotowaniu — napisz do osoby, która Cię zaprosiła.</p>
+            <a class="btn" id="webBtn" href="p/">Zostań partnerem w przeglądarce</a>
+            <p class="sub" style="margin-bottom:10px">Bez instalowania czegokolwiek: wpisujesz imię i od razu zatwierdzasz prośby. Działa na iPhonie i na komputerze.</p>
+            <p class="note">Wskazówka na iPhonie: po wejściu dotknij Udostępnij → „Do ekranu początkowego”, a dostaniesz ikonę jak apka.<br>Blokowanie aplikacji (własne ograniczenia) działa na razie tylko na Androidzie.</p>
         </div>
 
         <p class="error hidden" id="error"></p>
@@ -139,6 +142,10 @@
             el('title').textContent = 'FocusGuard';
             el('sub').textContent = 'Pobierz apkę i zostań czyimś partnerem odpowiedzialności.';
         }
+
+        var web = 'p/' + (token ? '?t=' + encodeURIComponent(token) : '');
+        el('webBtn').href = web;
+        el('webLink').href = web;
 
         if (isAndroid) {
             el('android').classList.remove('hidden');

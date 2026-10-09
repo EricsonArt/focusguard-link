@@ -1,0 +1,14 @@
+{
+  "name": "FocusGuard — partner",
+  "short_name": "FocusGuard",
+  "description": "Zatwierdzaj prośby osób, które Ci zaufały.",
+  "start_url": "/focusguard-link/p/",
+  "scope": "/focusguard-link/p/",
+  "display": "standalone",
+  "background_color": "#060C1E",
+  "theme_color": "#060C1E",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

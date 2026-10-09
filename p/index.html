@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FocusGuard — partner</title>
+<meta name="theme-color" content="#060C1E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="FocusGuard">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+:root{--bg:#060C1E;--card:#0F1A33;--surface:#0C1830;--border:#1D3055;--text:#E8EEFB;--muted:#8A97B1;--accent:#8B7EFF;--accent2:#52AAFF;--ok:#34D399;--err:#F87171;--warn:#FBBF24}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:linear-gradient(180deg,#0A0820,#060C1E 35%,#030810);color:var(--text);min-height:100vh;padding:max(20px,env(safe-area-inset-top)) 16px max(28px,env(safe-area-inset-bottom));line-height:1.5}
+.wrap{max-width:480px;margin:0 auto}
+h1{font-size:24px;margin-bottom:6px}
+.sub{color:var(--muted);font-size:14px;margin-bottom:20px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:14px}
+.logo{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.logo img{width:36px;height:36px;border-radius:9px}
+.logo b{font-size:17px}
+input,textarea{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:12px;padding:14px;font-size:16px;font-family:inherit;margin-bottom:12px}
+textarea{resize:none;height:64px}
+input:focus,textarea:focus{outline:2px solid var(--accent);border-color:transparent}
+.btn{display:block;width:100%;border:0;border-radius:14px;padding:15px;font-size:17px;font-weight:700;color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent2));cursor:pointer}
+.btn:active{transform:scale(.98)}
+.btn[disabled]{opacity:.5}
+.btn.ghost{background:transparent;border:1px solid var(--border);color:var(--muted);font-weight:600;font-size:15px}
+.btn.ok{background:var(--ok);color:#06251b}
+.btn.no{background:transparent;border:1px solid var(--err);color:var(--err)}
+.row{display:flex;gap:10px}
+.row .btn{flex:1}
+.link{background:none;border:0;color:var(--muted);font-size:14px;text-decoration:underline;padding:12px;width:100%;cursor:pointer}
+.err{color:var(--err);font-size:14px;margin:6px 0 10px}
+.tag{display:inline-block;font-size:12px;font-weight:700;border-radius:8px;padding:3px 9px;background:rgba(139,126,255,.16);color:#C4BCFF;margin-bottom:8px}
+.who{font-weight:700;font-size:17px}
+.what{margin:4px 0 8px}
+.reason{background:var(--surface);border-radius:12px;padding:10px 12px;font-size:14px;margin:8px 0 12px}
+.reason small{color:var(--muted);display:block;font-size:11px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 12px}
+.chip{padding:8px 14px;border-radius:20px;border:1px solid var(--border);color:var(--muted);font-size:14px;cursor:pointer}
+.chip.sel{border-color:var(--accent);color:#fff;background:rgba(139,126,255,.22)}
+.muted{color:var(--muted);font-size:13px}
+.empty{text-align:center;padding:30px 10px;color:var(--muted)}
+.empty b{display:block;color:var(--text);font-size:18px;margin-bottom:6px}
+.pill{display:inline-block;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:4px 12px;font-size:13px;margin:0 6px 6px 0}
+.hint{font-size:13px;color:var(--muted);background:rgba(139,126,255,.08);border:1px solid rgba(139,126,255,.2);border-radius:14px;padding:12px 14px;margin-bottom:14px}
+.hint b{color:var(--text)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ok);margin-right:6px;animation:pulse 2s infinite}
+@keyframes pulse{50%{opacity:.35}}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo"><img src="icon-180.png" alt=""><b>FocusGuard · partner</b></div>
+  <div id="view"></div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var API_KEY = "AIzaSyCvxDtWViCosovX-DiRzegWUd2Om0s0Q0E";
+  var DB = "https://social-media-addiction-blocker-default-rtdb.firebaseio.com";
+  var LS = "fg_partner_auth";
+  var view = document.getElementById("view");
+  var params = new URLSearchParams(location.search);
+  var inviteToken = params.get("t");
+  var auth = load();
+  var names = {};
+  var seen = {};
+  var durations = {};
+  var pollTimer = null;
+
+  function load() { try { return JSON.parse(localStorage.getItem(LS)) || null; } catch (e) { return null; } }
+  function save(a) { auth = a; try { localStorage.setItem(LS, JSON.stringify(a)); } catch (e) {} }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function standalone() { return window.navigator.standalone === true || (window.matchMedia && matchMedia("(display-mode: standalone)").matches); }
+
+  // ── Firebase REST ──────────────────────────────────────────────────────
+  function authFrom(j, extra) {
+    var a = { idToken: j.idToken || j.id_token, refreshToken: j.refreshToken || j.refresh_token, uid: j.localId || j.user_id,
+      expiresAt: Date.now() + (parseInt(j.expiresIn || j.expires_in, 10) || 3600) * 1000, name: (auth && auth.name) || "" };
+    if (extra) for (var k in extra) a[k] = extra[k];
+    return a;
+  }
+  async function idp(path, body) {
+    var r = await fetch("https://identitytoolkit.googleapis.com/v1/accounts:" + path + "?key=" + API_KEY, {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    var j = await r.json();
+    if (!r.ok) throw new Error(humanErr((j.error && j.error.message) || "BŁĄD"));
+    return j;
+  }
+  function humanErr(c) {
+    if (/EMAIL_NOT_FOUND|INVALID_PASSWORD|INVALID_LOGIN/.test(c)) return "Zły e-mail lub hasło";
+    if (/INVALID_EMAIL/.test(c)) return "Nieprawidłowy e-mail";
+    if (/TOO_MANY/.test(c)) return "Za dużo prób — spróbuj za chwilę";
+    if (/OPERATION_NOT_ALLOWED/.test(c)) return "Logowanie bez konta jest wyłączone na serwerze";
+    if (/network|Failed to fetch/i.test(c)) return "Brak połączenia z internetem";
+    return c;
+  }
+  async function token() {
+    if (!auth) throw new Error("Nie zalogowano");
+    if (Date.now() < auth.expiresAt - 60000) return auth.idToken;
+    var r = await fetch("https://securetoken.googleapis.com/v1/token?key=" + API_KEY, {
+      method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: "grant_type=refresh_token&refresh_token=" + encodeURIComponent(auth.refreshToken) });
+    var j = await r.json();
+    if (!r.ok) { save(null); throw new Error("Sesja wygasła — zaloguj się ponownie"); }
+    save(authFrom(j, { name: auth.name }));
+    return auth.idToken;
+  }
+  async function db(method, path, body) {
+    var t = await token();
+    var r = await fetch(DB + "/" + path + ".json?auth=" + t, {
+      method: method, headers: body === undefined ? {} : { "Content-Type": "application/json" },
+      body: body === undefined ? undefined : JSON.stringify(body) });
+    if (!r.ok) throw new Error("Błąd bazy (" + r.status + ")");
+    return r.json();
+  }
+
+  // ── Parowanie (to samo, co acceptPairingLink w apce) ───────────────────
+  async function migrate(uid) {
+    try {
+      var v = await db("GET", "partnerships/" + uid);
+      if (typeof v === "string") { await db("DELETE", "partnerships/" + uid); await db("PUT", "partnerships/" + uid + "/" + v, true); }
+    } catch (e) {}
+  }
+  async function acceptInvite(tok) {
+    var link = await db("GET", "pairing_links/" + encodeURIComponent(tok));
+    if (!link || !link.uid) return "Zaproszenie jest nieprawidłowe albo już użyte. Poproś o nowe.";
+    if (Date.now() > (link.expires_at || 0)) return "Zaproszenie wygasło. Poproś o nowe.";
+    if (link.uid === auth.uid) return "To Twoje własne zaproszenie.";
+    await migrate(auth.uid); await migrate(link.uid);
+    await db("PUT", "partnerships/" + auth.uid + "/" + link.uid, true);
+    await db("PUT", "partnerships/" + link.uid + "/" + auth.uid, true);
+    try { await db("DELETE", "pairing_links/" + encodeURIComponent(tok)); } catch (e) {}
+    return null;
+  }
+
+  // ── Widoki ─────────────────────────────────────────────────────────────
+  function renderJoin(err) {
+    view.innerHTML =
+      '<h1>Zostań partnerem</h1>' +
+      '<p class="sub">Ktoś Ci zaufał: to Ty zatwierdzasz jego odblokowania. Wystarczy imię — bez instalowania czegokolwiek.</p>' +
+      '<div class="card"><input id="name" placeholder="Twoje imię" autocomplete="given-name" autocapitalize="words" value="' + esc(auth && auth.name) + '">' +
+      (err ? '<div class="err">' + esc(err) + '</div>' : '') +
+      '<button class="btn" id="join">Dołącz</button></div>' +
+      '<button class="link" id="haveAcc">Mam już konto FocusGuard — zaloguj się</button>';
+    var go = document.getElementById("join"), nm = document.getElementById("name");
+    go.onclick = async function () {
+      var name = nm.value.trim();
+      if (!name) { nm.focus(); return; }
+      go.disabled = true; go.textContent = "Łączę…";
+      try {
+        if (!auth) { var j = await idp("signUp", { returnSecureToken: true }); save(authFrom(j, { name: name })); }
+        else save(Object.assign({}, auth, { name: name }));
+        await db("PUT", "profiles/" + auth.uid + "/name", name);
+        try { await db("PUT", "profiles/" + auth.uid + "/platform", "web"); } catch (e) {}
+        var msg = inviteToken ? await acceptInvite(inviteToken) : null;
+        if (msg) { renderJoin(msg); return; }
+        history.replaceState(null, "", location.pathname);
+        inviteToken = null;
+        renderInbox(true);
+      } catch (e) { renderJoin(e.message); }
+    };
+    document.getElementById("haveAcc").onclick = function () { renderLogin(); };
+  }
+
+  function renderLogin(err) {
+    view.innerHTML =
+      '<h1>Zaloguj się</h1><p class="sub">Na to samo konto, którego używasz w apce FocusGuard.</p>' +
+      '<div class="card"><input id="em" type="email" placeholder="E-mail" autocomplete="email">' +
+      '<input id="pw" type="password" placeholder="Hasło" autocomplete="current-password">' +
+      (err ? '<div class="err">' + esc(err) + '</div>' : '') +
+      '<button class="btn" id="go">Zaloguj</button></div><button class="link" id="back">Wstecz</button>';
+    document.getElementById("back").onclick = function () { auth ? renderInbox() : renderJoin(); };
+    document.getElementById("go").onclick = async function () {
+      var b = this; b.disabled = true; b.textContent = "Loguję…";
+      try {
+        var j = await idp("signInWithPassword", { email: document.getElementById("em").value.trim(), password: document.getElementById("pw").value, returnSecureToken: true });
+        save(authFrom(j, { email: j.email }));
+        try { auth.name = (await db("GET", "profiles/" + auth.uid + "/name")) || ""; save(auth); } catch (e) {}
+        var msg = inviteToken ? await acceptInvite(inviteToken) : null;
+        if (msg) { renderLogin(msg); return; }
+        history.replaceState(null, "", location.pathname); inviteToken = null;
+        renderInbox(true);
+      } catch (e) { renderLogin(e.message); }
+    };
+  }
+
+  function nameOf(uid) {
+    if (names[uid]) return Promise.resolve(names[uid]);
+    return db("GET", "profiles/" + uid + "/name").then(function (n) { names[uid] = n || uid.slice(0, 6); return names[uid]; }, function () { return uid.slice(0, 6); });
+  }
+
+  var TYPES = {
+    unlock: function (r) { return ["Odblokowanie", "chce wejść do <b>" + esc(r.app_name || "aplikacji") + "</b> na <b>" + (r.requested_duration || 15) + " min</b>"]; },
+    removal: function (r) { return ["Usunięcie blokady", "chce usunąć blokadę: <b>" + esc(r.app_name) + "</b>"]; },
+    website_removal: function (r) { return ["Odblokowanie strony", "chce odblokować stronę: <b>" + esc(r.app_name) + "</b>"]; },
+    uninstall: function () { return ["Odinstalowanie", "chce <b>odinstalować FocusGuard</b>"]; },
+    schedule_change: function (r) {
+      var t = "";
+      try { var a = JSON.parse(r.new_schedule || "[]"); t = a.length ? a.map(function (x) { return (x.startHour != null ? x.startHour + ":00–" + x.endHour + ":00" : ""); }).join(", ") : "usunięcie wszystkich blokad"; } catch (e) {}
+      return ["Godziny blokady", "chce zmienić godziny blokady" + (t ? ": <b>" + esc(t) + "</b>" : "")];
+    },
+    filter_change: function (r) { return ["AI-filtr", "chce zmienić AI-filtr: <b>" + esc(r.app_name || "ustawienia") + "</b>"]; },
+    website_limit_toggle: function () { return ["Limity stron", "chce przywrócić darmowy czas na stronach"]; },
+    website_limit_change: function (r) { return ["Limit stron", "chce zmienić dzienny limit stron na <b>" + (r.requested_limit > 0 ? r.requested_limit + " min" : "brak") + "</b>"]; },
+    app_limit_change: function (r) { return ["Limit aplikacji", "chce zmienić dzienny limit aplikacji na <b>" + (r.requested_limit > 0 ? r.requested_limit + " min" : "brak") + "</b>"]; },
+    daily_reset: function () { return ["Reset limitu", "chce wyzerować dzisiejszy zużyty czas"]; }
+  };
+
+  async function fetchInbox() {
+    var all = await db("GET", "requests") || {};
+    var list = [];
+    Object.keys(all).forEach(function (id) {
+      var r = all[id];
+      if (r && r.to_uid === auth.uid && r.status === "pending") { r.id = id; list.push(r); }
+    });
+    list.sort(function (a, b) { return (b.created_at || 0) - (a.created_at || 0); });
+    return list;
+  }
+  async function fetchPartners() {
+    var m = await db("GET", "partnerships/" + auth.uid);
+    if (!m || typeof m !== "object") return [];
+    return Promise.all(Object.keys(m).map(nameOf));
+  }
+
+  var flashTimer = null;
+  function notifyNew(n) {
+    try { if (navigator.vibrate) navigator.vibrate([200, 100, 200]); } catch (e) {}
+    var base = "FocusGuard — partner";
+    var on = true; clearInterval(flashTimer);
+    flashTimer = setInterval(function () { document.title = on ? "(" + n + ") Nowa prośba!" : base; on = !on; }, 900);
+    document.addEventListener("visibilitychange", function once() { if (!document.hidden) { clearInterval(flashTimer); document.title = base; document.removeEventListener("visibilitychange", once); } });
+  }
+
+  async function renderInbox(justJoined) {
+    clearInterval(pollTimer);
+    view.innerHTML =
+      (justJoined ? '<div class="hint"><b>Gotowe — jesteś partnerem!</b> Gdy ktoś poprosi Cię o zgodę, zobaczysz to tutaj.</div>' : '') +
+      '<h1>Cześć' + (auth.name ? ", " + esc(auth.name) : "") + '</h1>' +
+      '<p class="sub"><span class="dot"></span>Prośby do Ciebie · odświeżam co 4 s</p>' +
+      '<div id="partners" class="muted" style="margin-bottom:12px"></div>' +
+      (standalone() ? '' : '<div class="hint"><b>Wskazówka (iPhone):</b> dotknij <b>Udostępnij ⬆︎</b> w Safari → <b>Do ekranu początkowego</b>. Dostaniesz ikonę jak apka i nie będziesz musiał się logować ponownie.</div>') +
+      '<div id="list"><div class="empty">Ładuję…</div></div>' +
+      '<button class="link" id="out">Wyloguj</button>';
+    document.getElementById("out").onclick = function () { clearInterval(pollTimer); save(null); renderJoin(); };
+    async function tick() {
+      try {
+        var list = await fetchInbox();
+        var fresh = list.filter(function (r) { return !seen[r.id]; });
+        var first = Object.keys(seen).length === 0 && !tick.n;
+        list.forEach(function (r) { seen[r.id] = 1; });
+        if (fresh.length && tick.n) notifyNew(fresh.length);
+        tick.n = 1;
+        for (var i = 0; i < list.length; i++) list[i]._from = await nameOf(list[i].from_uid);
+        paint(list);
+      } catch (e) {
+        document.getElementById("list").innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+      }
+    }
+    try { var ps = await fetchPartners(); document.getElementById("partners").innerHTML = ps.length ? 'Pilnujesz: ' + ps.map(function (n) { return '<span class="pill">' + esc(n) + '</span>'; }).join("") : "Nie pilnujesz jeszcze nikogo."; } catch (e) {}
+    tick();
+    pollTimer = setInterval(function () { if (!document.hidden) tick(); }, 4000);
+  }
+
+  function paint(list) {
+    var box = document.getElementById("list");
+    if (!box) return;
+    if (!list.length) {
+      box.innerHTML = '<div class="empty"><b>Brak próśb</b>Zostaw tę kartę otwartą — nowa prośba pojawi się sama.</div>';
+      return;
+    }
+    box.innerHTML = list.map(function (r) {
+      var t = (TYPES[r.type || "unlock"] || TYPES.unlock)(r);
+      var isUnlock = !r.type || r.type === "unlock";
+      var dur = durations[r.id] || r.requested_duration || 15;
+      return '<div class="card" data-id="' + esc(r.id) + '"><span class="tag">' + esc(t[0]) + '</span>' +
+        '<div class="who">' + esc(r._from) + '</div><div class="what">' + t[1] + '</div>' +
+        (r.reason ? '<div class="reason"><small>Powód</small>' + esc(r.reason) + '</div>' : '') +
+        (isUnlock ? '<div class="muted">Na ile minut zezwalasz?</div><div class="chips">' +
+          [5, 10, 15, 30, 45, 60].map(function (m) { return '<span class="chip' + (m === dur ? " sel" : "") + '" data-m="' + m + '">' + m + ' min</span>'; }).join("") + '</div>' : '') +
+        '<textarea placeholder="Wiadomość do ' + esc(r._from) + ' (opcjonalnie)"></textarea>' +
+        '<div class="row"><button class="btn no" data-act="deny">Odrzuć</button><button class="btn ok" data-act="approve">Zatwierdź</button></div></div>';
+    }).join("");
+    box.querySelectorAll(".card").forEach(function (card) {
+      var id = card.getAttribute("data-id");
+      card.querySelectorAll(".chip").forEach(function (c) {
+        c.onclick = function () { durations[id] = parseInt(c.getAttribute("data-m"), 10); card.querySelectorAll(".chip").forEach(function (x) { x.classList.remove("sel"); }); c.classList.add("sel"); };
+      });
+      card.querySelectorAll("[data-act]").forEach(function (b) {
+        b.onclick = async function () {
+          var approve = b.getAttribute("data-act") === "approve";
+          var req = list.filter(function (x) { return x.id === id; })[0];
+          var isUnlock = !req.type || req.type === "unlock";
+          var msg = card.querySelector("textarea").value.trim();
+          var body = { status: approve ? "approved" : "denied" };
+          if (approve) body.duration_minutes = isUnlock ? (durations[id] || req.requested_duration || 15) : 0;
+          if (msg) body.partner_message = msg;
+          card.querySelectorAll("button").forEach(function (x) { x.disabled = true; });
+          try { await db("PATCH", "requests/" + id, body); card.style.opacity = ".4"; card.innerHTML = '<div class="empty"><b>' + (approve ? "Zatwierdzone ✓" : "Odrzucone") + '</b></div>'; setTimeout(function () { card.remove(); }, 1200); }
+          catch (e) { card.querySelectorAll("button").forEach(function (x) { x.disabled = false; }); alert(e.message); }
+        };
+      });
+    });
+  }
+
+  // ── Start ──────────────────────────────────────────────────────────────
+  (async function boot() {
+    if (auth && inviteToken) {
+      // Zalogowany i klika zaproszenie: przyjmij od razu, bez pytań.
+      view.innerHTML = '<div class="empty"><b>Łączę z partnerem…</b></div>';
+      try {
+        var msg = await acceptInvite(inviteToken);
+        if (!msg) { history.replaceState(null, "", location.pathname); inviteToken = null; return renderInbox(true); }
+        view.innerHTML = '<div class="card"><div class="err">' + esc(msg) + '</div><button class="btn" id="ok">Dalej</button></div>';
+        document.getElementById("ok").onclick = function () { inviteToken = null; renderInbox(); };
+        return;
+      } catch (e) { /* sesja mogła wygasnąć — pokaż ekran dołączania */ save(null); }
+    }
+    if (auth) return renderInbox();
+    if (inviteToken) return renderJoin();
+    view.innerHTML = '<h1>Partner FocusGuard</h1><p class="sub">Tu zatwierdzasz prośby osób, które Ci zaufały. Otwórz link z zaproszeniem albo zaloguj się.</p><div class="card"><button class="btn" id="l">Zaloguj się</button></div>';
+    document.getElementById("l").onclick = function () { renderLogin(); };
+  })();
+})();
+</script>
+</body>
+</html>
