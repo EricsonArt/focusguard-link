@@ -1,164 +1,336 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FocusGuard — zostań czyimś partnerem</title>
-    <meta name="description" content="Ktoś chce, żebyś był jego partnerem w FocusGuard. Dotknij raz: pobierzesz apkę i od razu się połączycie.">
-    <meta name="theme-color" content="#060C1E">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(180deg, #0A0820 0%, #060C1E 35%, #030810 100%);
-            color: #E2E8F0;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
-        }
-        .card {
-            background: rgba(30, 30, 60, 0.6);
-            border: 1px solid rgba(130, 130, 255, 0.15);
-            border-radius: 20px;
-            padding: 36px 28px;
-            max-width: 400px;
-            width: 100%;
-            text-align: center;
-        }
-        .icon {
-            width: 72px; height: 72px;
-            background: rgba(139, 126, 255, 0.12);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 20px;
-            font-size: 36px;
-        }
-        h1 { font-size: 24px; margin-bottom: 8px; }
-        .sub { color: #94A3B8; font-size: 15px; margin-bottom: 26px; line-height: 1.5; }
-        .btn {
-            display: block;
-            background: linear-gradient(135deg, #8B7EFF, #52AAFF);
-            color: white;
-            text-decoration: none;
-            padding: 18px 24px;
-            border-radius: 16px;
-            font-size: 18px;
-            font-weight: 700;
-            width: 100%;
-            border: 0;
-            cursor: pointer;
-            margin-bottom: 20px;
-        }
-        .btn:active { transform: scale(0.98); }
-        .steps { text-align: left; list-style: none; color: #94A3B8; font-size: 13.5px; line-height: 1.5; }
-        .steps li { display: flex; gap: 10px; margin-bottom: 8px; }
-        .steps b {
-            flex: none; width: 22px; height: 22px; border-radius: 50%;
-            background: rgba(139, 126, 255, 0.2); color: #C4BCFF;
-            display: flex; align-items: center; justify-content: center; font-size: 12px;
-        }
-        .link { display: block; margin-top: 14px; color: #8B7EFF; font-size: 13.5px; }
-        .note { color: #64748B; font-size: 12px; line-height: 1.5; margin-top: 16px; }
-        .error { color: #F87171; font-size: 14px; margin-bottom: 16px; }
-        .hidden { display: none; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FocusGuard — get your attention back</title>
+<meta name="description" content="FocusGuard blocks mindless scrolling. Someone you trust decides when you get unlocked. Free Android app.">
+<meta name="theme-color" content="#080D14">
+<meta property="og:title" content="FocusGuard — get your attention back">
+<meta property="og:description" content="Blocks scrolling. Someone you trust decides when you get unlocked.">
+<link rel="icon" href="p/icon-192.png">
+<style>
+:root {
+  --bg: #080D14;
+  --surface: #0D1620;
+  --line: rgba(255,255,255,.07);
+  --text: #E9EFF3;
+  --muted: #8797A6;
+  --mint: #6EE7C8;
+  --mint-ink: #04201A;
+  --blue: #7AA7FF;
+  --ease: cubic-bezier(.22,.8,.24,1);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+a { color: inherit; }
+.wrap { width: min(1040px, 100% - 40px); margin: 0 auto; }
+
+/* ── nav ── */
+nav {
+  position: fixed; inset: 0 0 auto 0; z-index: 10;
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  background: rgba(8,13,20,.62);
+  border-bottom: 1px solid var(--line);
+}
+nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 60px; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 650; letter-spacing: .01em; text-decoration: none; }
+.brand svg { width: 22px; height: 22px; }
+nav a.link { color: var(--muted); font-size: 14px; text-decoration: none; transition: color .3s; }
+nav a.link:hover { color: var(--text); }
+
+/* ── hero ── */
+.hero { position: relative; min-height: 100svh; display: grid; place-items: center; text-align: center; padding: 110px 0 70px; }
+.glow {
+  position: absolute; width: 760px; height: 760px; left: 50%; top: 46%;
+  translate: -50% -50%; pointer-events: none;
+  background: radial-gradient(closest-side, rgba(110,231,200,.14), rgba(122,167,255,.07) 55%, transparent 75%);
+  animation: breathe 9s ease-in-out infinite;
+}
+.ring {
+  position: absolute; left: 50%; top: 46%; translate: -50% -50%;
+  border: 1px solid rgba(110,231,200,.10); border-radius: 50%; pointer-events: none;
+  animation: breathe 9s ease-in-out infinite;
+}
+.r1 { width: 380px; height: 380px; animation-delay: -1.5s; }
+.r2 { width: 620px; height: 620px; animation-delay: -3s; border-color: rgba(122,167,255,.07); }
+.r3 { width: 880px; height: 880px; animation-delay: -4.5s; border-color: rgba(255,255,255,.04); }
+@keyframes breathe { 0%,100% { transform: scale(.96); opacity: .7; } 50% { transform: scale(1.04); opacity: 1; } }
+
+.hero .inner { position: relative; }
+.mark { width: 64px; height: 64px; margin: 0 auto 30px; }
+.eyebrow { font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: var(--mint); margin-bottom: 18px; }
+h1 { font-size: clamp(40px, 8vw, 78px); line-height: 1.04; font-weight: 700; letter-spacing: -.035em; }
+h1 span { color: var(--muted); font-weight: 600; }
+.lead { max-width: 520px; margin: 24px auto 38px; color: var(--muted); font-size: clamp(16px, 2.2vw, 19px); }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 12px; cursor: pointer; border: 0;
+  background: var(--mint); color: var(--mint-ink); font: inherit; font-weight: 650; font-size: 17px;
+  padding: 17px 30px; border-radius: 999px; text-decoration: none;
+  box-shadow: 0 0 0 0 rgba(110,231,200,.35), 0 12px 40px -12px rgba(110,231,200,.45);
+  transition: transform .35s var(--ease), box-shadow .35s var(--ease);
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 0 0 8px rgba(110,231,200,.10), 0 18px 50px -12px rgba(110,231,200,.55); }
+.btn:active { transform: scale(.98); }
+.btn svg { width: 20px; height: 20px; }
+.fine { margin-top: 18px; font-size: 13.5px; color: var(--muted); }
+.fine a { color: var(--blue); text-decoration: none; }
+.fine a:hover { text-decoration: underline; }
+.hidden { display: none !important; }
+
+/* ── sections ── */
+section { padding: 120px 0; }
+h2 { font-size: clamp(30px, 5vw, 46px); line-height: 1.1; letter-spacing: -.03em; font-weight: 700; max-width: 640px; }
+.kicker { font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: var(--mint); margin-bottom: 16px; }
+.sub { color: var(--muted); max-width: 560px; margin-top: 16px; }
+
+.three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 56px; margin-top: 64px; }
+.item svg { width: 28px; height: 28px; stroke: var(--mint); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; margin-bottom: 18px; }
+.item h3 { font-size: 18px; font-weight: 650; margin-bottom: 8px; }
+.item p { color: var(--muted); font-size: 15.5px; }
+
+.steps { list-style: none; margin-top: 56px; border-top: 1px solid var(--line); }
+.steps li { display: grid; grid-template-columns: 56px 1fr; gap: 12px; padding: 26px 0; border-bottom: 1px solid var(--line); align-items: baseline; }
+.steps b { color: var(--mint); font-weight: 600; font-variant-numeric: tabular-nums; }
+.steps span { font-size: 18px; }
+.steps small { display: block; color: var(--muted); font-size: 14.5px; margin-top: 4px; }
+
+/* ── safety ── */
+.safe { background: linear-gradient(180deg, transparent, rgba(110,231,200,.035) 30%, transparent); }
+.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 56px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 28px 26px; transition: border-color .4s, transform .5s var(--ease); }
+.card:hover { border-color: rgba(110,231,200,.28); transform: translateY(-3px); }
+.card svg { width: 24px; height: 24px; stroke: var(--mint); fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; margin-bottom: 16px; }
+.card h3 { font-size: 16.5px; font-weight: 650; margin-bottom: 6px; }
+.card p { color: var(--muted); font-size: 14.5px; line-height: 1.55; }
+.note { margin-top: 28px; color: var(--muted); font-size: 14px; }
+.note a { color: var(--blue); text-decoration: none; }
+.note a:hover { text-decoration: underline; }
+
+/* ── final CTA + footer ── */
+.final { text-align: center; padding: 110px 0 130px; }
+.final h2 { margin: 0 auto 34px; }
+footer { border-top: 1px solid var(--line); padding: 30px 0 44px; color: var(--muted); font-size: 13.5px; }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 26px; justify-content: space-between; }
+footer a { text-decoration: none; transition: color .3s; }
+footer a:hover { color: var(--text); }
+footer .l a { margin-right: 22px; }
+
+/* ── motion ── */
+.reveal { opacity: 0; transform: translateY(26px); transition: opacity 1s var(--ease), transform 1s var(--ease); transition-delay: var(--d, 0s); }
+.reveal.in { opacity: 1; transform: none; }
+.enter > * { opacity: 0; transform: translateY(18px); animation: up 1.1s var(--ease) forwards; }
+.enter > *:nth-child(1) { animation-delay: .05s; } .enter > *:nth-child(2) { animation-delay: .15s; }
+.enter > *:nth-child(3) { animation-delay: .25s; } .enter > *:nth-child(4) { animation-delay: .35s; }
+.enter > *:nth-child(5) { animation-delay: .45s; } .enter > *:nth-child(6) { animation-delay: .55s; }
+@keyframes up { to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .glow, .ring { animation: none; }
+  .reveal, .enter > * { opacity: 1; transform: none; animation: none; transition: none; }
+}
+
+@media (max-width: 820px) {
+  section { padding: 84px 0; }
+  .three, .cards { grid-template-columns: 1fr; gap: 36px; }
+  .cards { gap: 14px; }
+  .r3 { display: none; }
+  .glow { width: 520px; height: 520px; }
+}
+</style>
 </head>
 <body>
-    <div class="card">
-        <div class="icon">🛡️</div>
-        <h1 id="title">Zostań partnerem w FocusGuard</h1>
-        <p class="sub" id="sub">Ktoś Ci zaufał — to Ty będziesz zatwierdzać jego odblokowania. Dotknij raz, resztę zrobimy za Ciebie.</p>
 
-        <div id="android" class="hidden">
-            <button class="btn" id="joinBtn" type="button">Dołącz i pobierz FocusGuard</button>
-            <ul class="steps">
-                <li><b>1</b><span>Pobierz — plik zapisze się sam.</span></li>
-                <li><b>2</b><span>Zainstaluj. Android może zapytać o zgodę dla Chrome — wybierz „Ustawienia”, włącz „Zezwól” i wróć.</span></li>
-                <li><b>3</b><span>Otwórz FocusGuard, wpisz imię i dotknij „Dołącz”. Gotowe — jesteście połączeni.</span></li>
-            </ul>
-            <a class="link" id="webLink" href="p/">Chcesz tylko zatwierdzać prośby? Zrób to w przeglądarce, bez instalacji.</a>
-        </div>
+<nav>
+  <div class="wrap">
+    <a class="brand" href="#top">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#6EE7C8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5.5c0 4.2-2.9 7.7-7 9.5-4.1-1.8-7-5.3-7-9.5V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>
+      FocusGuard
+    </a>
+    <a class="link" href="#bezpieczenstwo">Safety</a>
+  </div>
+</nav>
 
-        <div id="other" class="hidden">
-            <a class="btn" id="webBtn" href="p/">Zostań partnerem w przeglądarce</a>
-            <p class="sub" style="margin-bottom:10px">Bez instalowania czegokolwiek: wpisujesz imię i od razu zatwierdzasz prośby. Działa na iPhonie i na komputerze.</p>
-            <p class="note">Wskazówka na iPhonie: po wejściu dotknij Udostępnij → „Do ekranu początkowego”, a dostaniesz ikonę jak apka.<br>Blokowanie aplikacji (własne ograniczenia) działa na razie tylko na Androidzie.</p>
-        </div>
-
-        <p class="error hidden" id="error"></p>
-        <p class="note" id="note">Pobierasz apkę prosto od autora. Zaproszenie ważne jest 24 godziny.</p>
+<header class="hero" id="top">
+  <div class="glow"></div><div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div>
+  <div class="wrap inner">
+    <div class="enter">
+      <svg class="mark" viewBox="0 0 24 24" fill="none" stroke="#6EE7C8" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5.5c0 4.2-2.9 7.7-7 9.5-4.1-1.8-7-5.3-7-9.5V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>
+      <p class="eyebrow" id="eyebrow">For Android</p>
+      <h1 id="title">Get your<br><span>attention back.</span></h1>
+      <p class="lead" id="lead">FocusGuard blocks mindless scrolling. Someone you trust decides when you get unlocked.</p>
+      <div>
+        <button class="btn" id="dl" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11m0 0l-4.5-4.5M12 15l4.5-4.5M5 20h14"/></svg>
+          <span id="dlText">Download for Android</span>
+        </button>
+      </div>
+      <p class="fine" id="fine">Free · APK file, about 170 MB · Android 8 or newer</p>
+      <p class="fine hidden" id="other">Open this on an Android phone. Have an iPhone? <a id="web" href="p/">Become someone's partner in the browser →</a></p>
     </div>
+  </div>
+</header>
 
-    <script>
-        // ── Ustawienia ───────────────────────────────────────────────────────
-        // Gdy apka trafi do Google Play, wpisz tu adres sklepu: instalacja będzie jednym dotknięciem,
-        // bez pytań Androida o „nieznane źródła", a token przejdzie przez instalację (Install Referrer).
-        var PLAY_URL = "";   // np. https://play.google.com/store/apps/details?id=com.focusguard
-        var APK_URL = "https://github.com/EricsonArt/focusguard-link/releases/latest/download/FocusGuard.apk";
-        var PACKAGE = "com.focusguard";
+<section>
+  <div class="wrap">
+    <p class="kicker reveal">What it does</p>
+    <h2 class="reveal">Less scrolling. More of you.</h2>
+    <div class="three">
+      <div class="item reveal" style="--d:.05s">
+        <svg viewBox="0 0 24 24"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M4 4l16 16"/></svg>
+        <h3>Blocks what hooks you</h3>
+        <p>TikTok, Reels, Shorts and any app you pick. Free time in small portions, with a wait that only counts while you really wait.</p>
+      </div>
+      <div class="item reveal" style="--d:.15s">
+        <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 20c.4-3.3 2.6-5.2 5.5-5.2s5.1 1.9 5.5 5.2"/><path d="M16 5.2a3.2 3.2 0 010 5.6M18.5 14.9c1.6.8 2.7 2.4 3 5.1"/></svg>
+        <h3>A trusted person decides</h3>
+        <p>Want to lift a block? Your partner gets a request with your reason and says yes or no. You can't trick yourself.</p>
+      </div>
+      <div class="item reveal" style="--d:.25s">
+        <svg viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/></svg>
+        <h3>AI filter on your phone</h3>
+        <p>When something you would rather not see appears, you get a few seconds to scroll on, then a break. You set how strict it is.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-        var params = new URLSearchParams(window.location.search);
-        var token = params.get('t');
-        var isAndroid = /android/i.test(navigator.userAgent);
+<section style="padding-top:20px">
+  <div class="wrap">
+    <p class="kicker reveal">How to start</p>
+    <h2 class="reveal">Three minutes.</h2>
+    <ol class="steps">
+      <li class="reveal"><b>01</b><span>Download and install<small>Android will ask to allow installs from your browser. That is normal, because the app is not on Google Play.</small></span></li>
+      <li class="reveal"><b>02</b><span>Choose what to block<small>Apps, feeds, hours. We guide you step by step.</small></span></li>
+      <li class="reveal"><b>03</b><span>Add a partner from your contacts<small>They get one link by SMS or WhatsApp. Ready in a minute.</small></span></li>
+    </ol>
+  </div>
+</section>
 
-        function el(id) { return document.getElementById(id); }
+<section class="safe" id="bezpieczenstwo">
+  <div class="wrap">
+    <p class="kicker reveal">Safety</p>
+    <h2 class="reveal">Your data stays with you.</h2>
+    <p class="sub reveal">We ask for strong permissions, so we say plainly what we do and what we don't.</p>
+    <div class="cards">
+      <div class="card reveal" style="--d:.0s">
+        <svg viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg>
+        <h3>AI runs on your phone</h3>
+        <p>The model runs offline. Screenshots and on-screen text are never saved or sent anywhere.</p>
+      </div>
+      <div class="card reveal" style="--d:.08s">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="3.2"/><path d="M5.5 20c.6-3.6 3-5.5 6.5-5.5s5.9 1.9 6.5 5.5"/></svg>
+        <h3>Contacts stay local</h3>
+        <p>Read only with your permission and only on the phone, to pick someone to invite. They never reach a server.</p>
+      </div>
+      <div class="card reveal" style="--d:.16s">
+        <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/><path d="M17 15l3 3m0-3l-3 3"/></svg>
+        <h3>No ads, no data sales</h3>
+        <p>No ads, no tracking. We store only what is needed to connect you with a partner: a name and requests.</p>
+      </div>
+      <div class="card reveal" style="--d:.0s">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5l3 2"/></svg>
+        <h3>You know why each permission exists</h3>
+        <p>Accessibility is used to see what is on screen and cover blocked apps. Before you turn anything on, we show an exact explanation.</p>
+      </div>
+      <div class="card reveal" style="--d:.08s">
+        <svg viewBox="0 0 24 24"><path d="M12 3.5v11m0 0l-4-4m4 4l4-4M5 19.5h14"/></svg>
+        <h3>File straight from the author</h3>
+        <p>You download the APK from the official GitHub release, with no middlemen.</p>
+      </div>
+      <div class="card reveal" style="--d:.16s">
+        <svg viewBox="0 0 24 24"><path d="M5 7h14M9 7V4.5h6V7M7 7l.8 12.5h8.4L17 7"/></svg>
+        <h3>You can delete everything yourself</h3>
+        <p>Delete your account and data in the app: Settings, Delete account and data.</p>
+      </div>
+    </div>
+    <p class="note reveal">Details: <a href="privacy.html">privacy policy</a> · <a href="delete-account.html">how to delete your account</a></p>
+  </div>
+</section>
 
-        function downloadUrl() {
-            if (PLAY_URL) {
-                return PLAY_URL + (token ? (PLAY_URL.indexOf('?') >= 0 ? '&' : '?') + 'referrer=' + encodeURIComponent('pair=' + token) : '');
-            }
-            return APK_URL;
-        }
+<section class="final">
+  <div class="wrap">
+    <h2 class="reveal">Start with one tap.</h2>
+    <div class="reveal"><button class="btn" id="dl2" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11m0 0l-4.5-4.5M12 15l4.5-4.5M5 20h14"/></svg>
+      <span id="dlText2">Download for Android</span>
+    </button></div>
+  </div>
+</section>
 
-        function copyToken(done) {
-            // Nowa apka przy pierwszym uruchomieniu znajdzie to w schowku i sama przyjmie zaproszenie.
-            if (!token) return done();
-            var text = 'focusguard-pair:' + token;
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(text).then(done, done);
-            } else {
-                try {
-                    var ta = document.createElement('textarea');
-                    ta.value = text; document.body.appendChild(ta); ta.select();
-                    document.execCommand('copy'); document.body.removeChild(ta);
-                } catch (e) {}
-                done();
-            }
-        }
+<footer>
+  <div class="wrap">
+    <div class="l"><a href="privacy.html">Privacy</a><a href="delete-account.html">Delete account</a><a href="https://github.com/EricsonArt/focusguard-link/issues">Report a problem</a><a id="web2" href="p/">I'm a partner (browser)</a></div>
+    <div>© FocusGuard</div>
+  </div>
+</footer>
 
-        function openOrInstall() {
-            copyToken(function () {
-                var fallback = downloadUrl();
-                // Chrome: jeśli apka jest — otworzy ją i sparuje; jeśli nie — przejdzie do pobrania.
-                var path = token ? 'pair/' + encodeURIComponent(token) : 'pair/';
-                window.location.href = 'intent://' + path + '#Intent;scheme=focusguard;package=' + PACKAGE +
-                    ';S.browser_fallback_url=' + encodeURIComponent(fallback) + ';end';
-            });
-        }
+<script>
+// When the app reaches Google Play, put the store URL here: install becomes one tap
+// and the invite token survives the install (Install Referrer).
+var PLAY_URL = "";   // np. https://play.google.com/store/apps/details?id=com.focusguard
+var APK_URL = "https://github.com/EricsonArt/focusguard-link/releases/latest/download/FocusGuard.apk";
+var PACKAGE = "com.focusguard";
 
-        if (!token) {
-            el('title').textContent = 'FocusGuard';
-            el('sub').textContent = 'Pobierz apkę i zostań czyimś partnerem odpowiedzialności.';
-        }
+var params = new URLSearchParams(window.location.search);
+var token = params.get('t');
+var isAndroid = /android/i.test(navigator.userAgent);
+function el(id) { return document.getElementById(id); }
 
-        var web = 'p/' + (token ? '?t=' + encodeURIComponent(token) : '');
-        el('webBtn').href = web;
-        el('webLink').href = web;
+function downloadUrl() {
+  if (PLAY_URL) return PLAY_URL + (token ? (PLAY_URL.indexOf('?') >= 0 ? '&' : '?') + 'referrer=' + encodeURIComponent('pair=' + token) : '');
+  return APK_URL;
+}
+function copyToken(done) {
+  // On first launch the new app finds this in the clipboard and accepts the invite by itself.
+  if (!token) return done();
+  var text = 'focusguard-pair:' + token;
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, done);
+  else { try { var ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); } catch (e) {} done(); }
+}
+function go() {
+  if (!isAndroid) { window.location.href = downloadUrl(); return; }
+  copyToken(function () {
+    // Chrome: if the app is installed it opens and pairs; if not, it goes to the download.
+    var path = token ? 'pair/' + encodeURIComponent(token) : 'pair/';
+    window.location.href = 'intent://' + path + '#Intent;scheme=focusguard;package=' + PACKAGE +
+      ';S.browser_fallback_url=' + encodeURIComponent(downloadUrl()) + ';end';
+  });
+}
+el('dl').addEventListener('click', go);
+el('dl2').addEventListener('click', go);
 
-        if (isAndroid) {
-            el('android').classList.remove('hidden');
-            el('joinBtn').addEventListener('click', openOrInstall);
-            if (!token) el('joinBtn').textContent = 'Pobierz FocusGuard';
-            // Apka już jest? Spróbuj otworzyć ją od razu (bez dotykania).
-            if (token) {
-                setTimeout(function () { window.location.href = 'focusguard://pair/' + encodeURIComponent(token); }, 400);
-            }
-        } else {
-            el('other').classList.remove('hidden');
-            el('note').classList.add('hidden');
-        }
-    </script>
+var web = 'p/' + (token ? '?t=' + encodeURIComponent(token) : '');
+el('web').href = web; el('web2').href = web;
+
+if (token) {
+  // Someone invited you as a partner: same button, different message.
+  el('eyebrow').textContent = 'Invitation';
+  el('title').innerHTML = 'Become<br><span>someone\'s partner.</span>';
+  el('lead').textContent = 'Someone trusts you. You will approve their unlocks. Tap once, we do the rest.';
+  el('dlText').textContent = el('dlText2').textContent = 'Join and download FocusGuard';
+  el('fine').textContent = 'Invitation valid 24 hours · APK file, about 170 MB';
+  // App already installed? Try opening it right away.
+  if (isAndroid) setTimeout(function () { window.location.href = 'focusguard://pair/' + encodeURIComponent(token); }, 400);
+}
+if (!isAndroid) el('other').classList.remove('hidden');
+
+// Smooth section reveal while scrolling.
+var items = document.querySelectorAll('.reveal');
+if ('IntersectionObserver' in window) {
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+  items.forEach(function (n) { io.observe(n); });
+} else items.forEach(function (n) { n.classList.add('in'); });
+</script>
 </body>
 </html>
