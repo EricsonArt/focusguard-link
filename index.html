@@ -8,7 +8,12 @@
 <meta name="theme-color" content="#080D14">
 <meta property="og:title" content="FocusGuard — get your attention back">
 <meta property="og:description" content="Blocks scrolling. Someone you trust decides when you get unlocked.">
+<meta property="og:image" content="https://ericsonart.github.io/focusguard-link/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="p/icon-192.png">
+<link rel="apple-touch-icon" href="p/icon-180.png">
 <style>
 :root {
   --bg: #080D14;
@@ -42,7 +47,8 @@ nav {
 }
 nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 60px; }
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 650; letter-spacing: .01em; text-decoration: none; }
-.brand svg { width: 22px; height: 22px; }
+.brand svg { width: 22px; height: 23px; }
+.brand b { font-weight: inherit; background: linear-gradient(90deg, #8B7EFF, #3A9BFF); -webkit-background-clip: text; background-clip: text; color: transparent; }
 nav a.link { color: var(--muted); font-size: 14px; text-decoration: none; transition: color .3s; }
 nav a.link:hover { color: var(--text); }
 
@@ -65,7 +71,7 @@ nav a.link:hover { color: var(--text); }
 @keyframes breathe { 0%,100% { transform: scale(.96); opacity: .7; } 50% { transform: scale(1.04); opacity: 1; } }
 
 .hero .inner { position: relative; }
-.mark { width: 64px; height: 64px; margin: 0 auto 30px; }
+.mark { width: 64px; height: 67px; margin: 0 auto 30px; filter: drop-shadow(0 0 14px rgba(139,126,255,.45)); }
 .eyebrow { font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: var(--mint); margin-bottom: 18px; }
 h1 { font-size: clamp(40px, 8vw, 78px); line-height: 1.04; font-weight: 700; letter-spacing: -.035em; }
 h1 span { color: var(--muted); font-weight: 600; }
@@ -152,8 +158,8 @@ footer .l a { margin-right: 22px; }
 <nav>
   <div class="wrap">
     <a class="brand" href="#top">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#6EE7C8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5.5c0 4.2-2.9 7.7-7 9.5-4.1-1.8-7-5.3-7-9.5V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>
-      FocusGuard
+      <svg viewBox="150 140 724 760" aria-hidden="true"><defs><linearGradient id="nmV" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B7A4FF"/><stop offset="1" stop-color="#8B7EFF"/></linearGradient><linearGradient id="nmB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#62C0FF"/><stop offset="1" stop-color="#3A86FF"/></linearGradient></defs><g fill="none" stroke-width="68" stroke-linecap="round" stroke-linejoin="round"><path d="M496 186C410 226 326 244 248 252C246 522 334 728 496 842" stroke="url(#nmV)"/><path d="M528 186C614 226 698 244 776 252C778 522 690 728 528 842" stroke="url(#nmB)"/></g><circle cx="512" cy="482" r="104" fill="none" stroke="#fff" stroke-width="42"/><circle cx="512" cy="482" r="40" fill="#fff"/></svg>
+      <span>Focus<b>Guard</b></span>
     </a>
     <a class="link" href="#bezpieczenstwo">Safety</a>
   </div>
@@ -163,7 +169,7 @@ footer .l a { margin-right: 22px; }
   <div class="glow"></div><div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div>
   <div class="wrap inner">
     <div class="enter">
-      <svg class="mark" viewBox="0 0 24 24" fill="none" stroke="#6EE7C8" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5.5c0 4.2-2.9 7.7-7 9.5-4.1-1.8-7-5.3-7-9.5V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>
+      <svg class="mark" viewBox="150 140 724 760" aria-hidden="true"><defs><linearGradient id="hmV" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B7A4FF"/><stop offset="1" stop-color="#8B7EFF"/></linearGradient><linearGradient id="hmB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#62C0FF"/><stop offset="1" stop-color="#3A86FF"/></linearGradient></defs><g fill="none" stroke-width="68" stroke-linecap="round" stroke-linejoin="round"><path d="M496 186C410 226 326 244 248 252C246 522 334 728 496 842" stroke="url(#hmV)"/><path d="M528 186C614 226 698 244 776 252C778 522 690 728 528 842" stroke="url(#hmB)"/></g><circle cx="512" cy="482" r="104" fill="none" stroke="#fff" stroke-width="42"/><circle cx="512" cy="482" r="40" fill="#fff"/></svg>
       <p class="eyebrow" id="eyebrow">For Android</p>
       <h1 id="title">Get your<br><span>attention back.</span></h1>
       <p class="lead" id="lead">FocusGuard blocks mindless scrolling. Someone you trust decides when you get unlocked.</p>
